@@ -1,8 +1,7 @@
 use std::{
     fs::OpenOptions,
     io::{Read, Seek, Write},
-    time::SystemTime,
-    time::Duration,
+    time::{SystemTime, Duration},
 };
 
 use notify::{Config, RecommendedWatcher, RecursiveMode, Watcher};
@@ -14,8 +13,8 @@ use crate::reminder::reminder;
 
 use serde_json;
 
-// #[tokio::main]
-pub fn start_daemon() -> notify::Result<()> {
+#[tokio::main]
+pub async fn start_daemon() -> notify::Result<()> {
     println!("Watching reminder_data.json");
     let (tx, rx) = std::sync::mpsc::channel();
 
@@ -28,12 +27,14 @@ pub fn start_daemon() -> notify::Result<()> {
         RecursiveMode::NonRecursive,
     )?;
 
-    // tokio::spawn(async move {
-    //     loop {
-    //         reload_file(&mut content);
-    //         tokio::time::sleep(Duration::from_secs(30)).await;
-    //     }
-    // });
+    let cloned_content = content.clone();
+    tokio::spawn(async move {
+        let mut cloned_content = cloned_content;
+        loop {
+            reload_file(&mut cloned_content);
+            tokio::time::sleep(Duration::from_secs(10)).await;
+        }
+    });
 
     for res in rx {
         match res {
@@ -84,6 +85,7 @@ fn reload_file(events: &mut Vec<reminder::Event>) {
                 }
             } else {
                 println!("Error parsing JSON");
+                return;
             }
 
             if changed {

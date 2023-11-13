@@ -36,6 +36,7 @@ pub async fn start_daemon() -> notify::Result<()> {
         }
     });
 
+    // Is a filewatcher even needed?
     for res in rx {
         match res {
             Ok(event) => {

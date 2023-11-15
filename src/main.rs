@@ -1,5 +1,4 @@
 use std::env;
-use std::thread;
 
 mod daemon;
 mod reminder;
@@ -15,15 +14,11 @@ fn main() {
 
     if args.len() == 2 && args[1].trim() == "--daemon" {
         // Start daemon
-
-        let handle_daemon = thread::spawn(|| daemon::daemon::start_daemon());
-        let _ = handle_daemon.join().unwrap();
-        return;
+        daemon::daemon::setup_daemon();
     }
-
-    writer::writer::check_type();
-    println!("Finished writing to file");
-    return;
-
-    // Add new reminder
+    else {
+        // Add new reminder
+        writer::writer::check_type();
+        println!("Finished writing to file");
+    }
 }

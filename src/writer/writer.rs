@@ -91,4 +91,42 @@ fn write_event() {
             println!("Error opening file: {}", e);
         }
     }
+
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open("/tmp/remind_data.json");
+
+    match file {
+        Ok(mut file) => {
+            let mut content = String::new();
+            file.read_to_string(&mut content).unwrap_or_default();
+
+            // Parsing existing object
+            let mut json_content: serde_json::Value =
+                serde_json::from_str(&content).unwrap_or(serde_json::Value::Array(Vec::new()));
+
+            // if already array, append object
+            if let serde_json::Value::Array(ref mut arr) = json_content {
+                let new_json_value = serde_json::to_value(&remind_event).unwrap();
+                arr.push(new_json_value);
+            } else {
+                // Create new array and add element
+                let new_array =
+                    serde_json::Value::Array(vec![serde_json::to_value(&remind_event).unwrap()]);
+                json_content = new_array;
+            }
+
+            // Write back to file
+            let serialized = serde_json::to_string_pretty(&json_content).unwrap();
+            file.set_len(0).unwrap();
+            file.seek(std::io::SeekFrom::Start(0)).unwrap();
+            file.write_all(serialized.as_bytes()).unwrap();
+        }
+        Err(e) => {
+            println!("Error opening file: {}", e);
+        }
+    }
 }
+

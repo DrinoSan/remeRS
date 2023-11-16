@@ -9,6 +9,7 @@ edition = "2021"
 daemonize = "0.5.0"
 log = "0.4.20"
 notify = "6.1.1"
+notify-debouncer-mini = "0.4.1"
 notify-rust = "4.9.0"
 serde = {version="1.0.192", features=["derive"]}
 serde_json = "1.0.108"

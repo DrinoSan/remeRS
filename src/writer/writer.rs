@@ -1,5 +1,5 @@
-use std::fs::{OpenOptions, self};
-use std::io::{stdin, Read, Seek, Write};
+use std::fs::{self, OpenOptions};
+use std::io::{stdin, Read};
 use std::time::{Duration, SystemTime};
 
 use serde_json;

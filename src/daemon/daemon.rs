@@ -25,9 +25,9 @@ const LOG_FILE_PATH: &str = "daemon.out";
 pub fn setup_daemon() {
     let stdout = File::create(LOG_FILE_PATH).unwrap();
     let daemonize = Daemonize::new()
-        .working_directory(".") // for default behaviour.
+        .working_directory(".")
         .stdout(stdout)
-        .umask(0o777); // Set umask, `0o027` by default.
+        .umask(0o777);
 
     match daemonize.start() {
         Ok(_) => {
